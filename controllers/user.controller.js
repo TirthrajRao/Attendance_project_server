@@ -6,7 +6,6 @@ const moment = require('moment');
 var attendanceFunction = require('../callBackFunctions/attendanceFunctions');
 
 userController.signUp = function(req,res){
-	console.log("it works ======>" , req.body);
 	userModel.findOne({email : req.body.email} , (err , foundUser)=>{
 			console.log("found USer =======+>" , foundUser)
 			if(err){

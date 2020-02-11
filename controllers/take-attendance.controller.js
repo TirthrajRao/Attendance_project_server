@@ -156,10 +156,6 @@ take_attendance.getAttendanceById =  function(req , res){
 	}
 }
 
-take_attendance.getCurrentMonthLogCount = function(req , res){
-	
-	return(res.send("100"));
-}
 take_attendance.getCurrentMonthLogByPage = function(req , res){
 	console.log("body of pagination " , req.body);
 	if(!req.body.date){
@@ -194,12 +190,7 @@ take_attendance.getCurrentMonthLogByPage = function(req , res){
 			if(err){
 				res.send(err);
 			}else{
-				// foundLogs = foundLogs.filter(function(obj){
-				// 	console.log(" ================++> " , obj.date.toISOString())
-				// 	if(obj.date.toISOString().match(date)){
-				// 		return obj;
-				// 	}
-				// });
+			
 				var got = await  attendanceFunction.calculateTimeLog(foundLogs , 5 , foundLogs[0].date , foundLogs[foundLogs.length - 1].date);
 				// console.log("Got ==========================>" , got);
 
@@ -219,10 +210,6 @@ take_attendance.getCurrentMonthLogByPage = function(req , res){
 
 //imported 
 //Not needed 
-take_attendance.getLogByName = function(req , res){
-	console.log(req.params);
-
-}
 
 //Done
 take_attendance.getLogBySingleDate = function(req , res){
@@ -268,10 +255,11 @@ take_attendance.getLogBySingleDate = function(req , res){
 			}
 		}
 	])
-	.exec((err , foundLogs)=>{
+	.exec(async(err , foundLogs)=>{
 		if(err){
 			res.send(err);
 		}else{
+			foundLogs = await attendanceFunction.properFormatDate(foundLogs);	
 			res.send(foundLogs);
 		}
 	});
@@ -325,10 +313,11 @@ take_attendance.getTodaysattendance = function(req , res){
 			res.send(err);
 		}else{
 			userModel.find({userRole : { $ne : 'admin' } , branch : { $eq : req.body.branch }})
-			.exec((err , totalUser)=>{
+			.exec(async (err , totalUser)=>{
 				if(err){
 					res.status(500).send(err);
 				}else{
+					foundLogs = await attendanceFunction.properFormatDate(foundLogs);
 					console.log("You are in getAttendanceById function" , foundLogs);
 					res.json({data :foundLogs , presentCount : foundLogs.length , totalUser : totalUser.length});
 				}

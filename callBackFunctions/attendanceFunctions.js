@@ -1,6 +1,6 @@
 const moment = require('moment');
 var nodemailer = require('nodemailer');
-
+const userModel = require('../models/user.model');
 
 const attendanceFunctions = {
 	newAttendance : function(body){
@@ -98,6 +98,7 @@ const attendanceFunctions = {
 			obj.date = moment(obj.date).utc().format('DD-MM-YYYY');
 			console.log("after date =======>" , obj.date);
 		});
+		console.log("data after updating date ==================>", data);
 		return data
 	},
 	formatMonthAccordingToDays(data , startDate , endDate){
@@ -322,6 +323,18 @@ const attendanceFunctions = {
 			} else {
 				console.log('Email sent: ' + info.response);
 			}
+		});
+	},
+	testing : ()=>{
+		return new Promise((resolve, reject)=>{
+			userModel.find().exec((err, found)=>{
+				if(err){
+					reject(err);
+				}
+				else{
+					resolve(found);
+				}
+			})
 		});
 	}
 }
