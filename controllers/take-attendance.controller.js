@@ -83,14 +83,15 @@ take_attendance.fillAttendance = function(req , res){
 				else{
 					req.body =  await attendanceFunction.newAttendance(req.body);
 					var attendence = new attendanceModel(req.body);
-					attendence.save((err , savedAttendence)=>{
+					attendence.save(async(err , savedAttendence)=>{
 						if(err){
 							res.status(500).send(err);
 						}
 						else{
-							console.log(savedAttendence);
+							console.log("NEW ATTENDACEE +++++++++++++++++." ,savedAttendence);
 							var arr = [];
-							arr.push(savedAttendence)
+							arr.push(savedAttendence);
+							
 							res.status(200).send(arr);
 						}
 					});
@@ -98,7 +99,7 @@ take_attendance.fillAttendance = function(req , res){
 			});
 
 			}catch(e){
-				console.log(e)	
+				console.log(e);	
 			}
 		}
 	});
@@ -321,7 +322,6 @@ take_attendance.getTodaysattendance = function(req , res){
 					console.log("You are in getAttendanceById function" , foundLogs);
 					res.json({data :foundLogs , presentCount : foundLogs.length , totalUser : totalUser.length});
 				}
-
 			});
 		}
 	});	
