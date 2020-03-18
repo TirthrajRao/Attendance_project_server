@@ -45,22 +45,43 @@ const attendanceFunctions = {
 		foundAttendence.status = "Absent";
 		return foundAttendence;
 	},
-	calculateTimeLog : function(array , resultHours, start , end){
+	calculateResultHours : (startDate, endDate)=>{
+		var totalHours = 0;
+		var count = 0;
+		var StartingDate = moment(startDate);
+		var momentObjEnd = moment(endDate);
+		var resultHours = momentObjEnd.diff(StartingDate, 'days');
+		startDate = moment(StartingDate).subtract('days', 1);
+		console.log("TOTAL RESULT HOURS =========>", resultHours , moment(startDate).format('dd'))
+		if(moment(startDate).format('dd') != 'Su'){
+			count++;
+			totalHours = totalHours + 30600;
+		}
+		// startDate = startDate.add('days', 1);
+		console.log("start date after checking firest date ==>", startDate)	
+		for(let i = 1; i <= resultHours; i++){
+			console.log( i , "Starting date ===>", moment(startDate).add('days', i).format('dd')," ==> Day ===>" ,moment(startDate).format('dd') , "Ending Date ====>", endDate);
+			if(moment(startDate).add('days', i).format('dd') != 'Su' ){
+				count++
+				totalHours = totalHours + 30600;
+			}
+			// startDate = moment(startDate).add('days', i);
+		};
+		var minutes = Math.floor(totalHours / 60);
+		totalHours = totalHours%60;
+		var hours = Math.floor(minutes/60)
+		minutes = minutes%60;
+		console.log("totalHours ====>" , hours , minutes);
+		let totalHoursToWork =  hours+":"+minutes+":"+"00";
+		console.log("COUNTTTTTTTTTTTTTTTTT ++++++++++++++++++++>",count ,  totalHoursToWork);
+		return totalHoursToWork
+	},
+	calculateTimeLog : function(array , start , end){
 		var workingHours = 0;
 		var totalHours = 0;
-		var totalHoursToWork;
 		var totalHoursWorked;
 		// console.log("start ========+++>" , start._d , "end ==>" , end._d);
-		console.log("result hours =========>" , resultHours);
-		if(resultHours < 1)
-			resultHours = 1	
-		for(var i = 0 ; i< Math.ceil(resultHours) ; i++){
-			console.log(resultHours - i);
-			var local = moment(start._d).subtract(i, 'days');
-			local =  moment(local._d , "YYYY-MM-DD HH:mm:ss").format('dddd');
-			// console.log("add date ====>" , moment(start._d).subtract(i, 'days')._d  , "local ady" ,local);
-			totalHours = totalHours + 30600; 
-		}
+		
 		array.forEach((obj)=>{
 			// console.log(obj);
 			if(obj.diffrence){
@@ -68,13 +89,6 @@ const attendanceFunctions = {
 				console.log("workingHours ====>" , workingHours);
 			}
 		});
-		//calculate total working hours 
-		var minutes = Math.floor(totalHours / 60);
-		totalHours = totalHours%60;
-		var hours = Math.floor(minutes/60)
-		minutes = minutes%60;
-		console.log("totalHours ====>" , hours , minutes);
-		totalHoursToWork =  hours+":"+minutes+":"+"00";
 		//calculate hours worked 
 		
 		var minutes = Math.floor(workingHours / 60);
@@ -82,11 +96,9 @@ const attendanceFunctions = {
 		var hours = Math.floor(minutes/60)
 		minutes = minutes%60;
 		totalHoursWorked = hours+":"+minutes+":"+"00";
-		console.log("total hours attednent ====>" , totalHoursToWork);
 		console.log("total hours to attendnace====>" , totalHoursWorked);
 		var obj = {
 			"TotalHoursCompleted" : totalHoursWorked,
-			"TotalHoursToComplete" : totalHoursToWork
 		}
 		return obj
 
@@ -295,8 +307,6 @@ const attendanceFunctions = {
 		newObject.forEach((obj , index)=>{
 			console.log("obj ==>" , obj.date);
 		});
-		// console.log(newObject);
-
 		return newObject;
 	},
 	unauthorizedIPLoginEmail(userData){

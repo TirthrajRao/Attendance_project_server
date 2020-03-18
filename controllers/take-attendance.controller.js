@@ -326,62 +326,68 @@ take_attendance.getTodaysattendance = function(req , res){
 		}
 	});	
 }
-take_attendance.getReportById = function(req , res){
+take_attendance.getReportById = async function(req , res){
 	if(!req.body.flag){
 		console.log("In the success" ,  req.body);
 		req.body.startDate = req.body.startDate.split("T")[0] + "T18:30:00.000Z";
 		endDate = req.body.endDate.split("T")[0] + "T18:30:00.000Z";
+		var totalHoursToWork = await attendanceFunction.calculateResultHours(req.body.startDate, endDate);
 		// endDate = endDate + "T"  + part;
-		var StartingDate = moment(req.body.startDate);
-		var momentObjEnd = moment(endDate);
-		console.log("Both dates =============>" ,req.body.startDate , endDate ) + 1;
 
-		var resultHours = momentObjEnd.diff(StartingDate, 'days') + 1;
+		// var StartingDate = moment(req.body.startDate);
+		// var momentObjEnd = moment(endDate);
+		// console.log("Both dates =============>" ,req.body.startDate , endDate ) + 1;
+
+		// var resultHours = momentObjEnd.diff(StartingDate, 'days') + 1;
 	}else{
 		endDate = req.body.endDate +  "T18:30:00.000Z"; 
 		req.body.startDate = req.body.startDate +  "T18:30:00.000Z";
-		var StartingDate = moment(req.body.startDate);
-		var momentObjEnd = moment(endDate);
-		var resultHours = momentObjEnd.diff(StartingDate, 'days') + 1;
+		var totalHoursToWork = await attendanceFunction.calculateResultHours(req.body.startDate, endDate);
+		// var StartingDate = moment(req.body.startDate);
+		// var momentObjEnd = moment(endDate);
+		// var resultHours = momentObjEnd.diff(StartingDate, 'days') + 1;
 	}
-
+	// let resultHours = await attendanceFunction.calculateResultHours(req.body);
+	
 	console.log("In the success" ,  req.body.startDate , endDate);
-	attendanceModel.find(
-		{ date : { $gte: req.body.startDate  , $lte :  endDate } , userId : { $eq : req.body.userId } }
-		)
-	// attendanceModel.aggregate([
-	// 	{
-	// 		$lookup:
-	// 		{
-	// 			from: "users",
-	// 			localField: "userId",
-	// 			foreignField: "_id",
-	// 			as: "user"
-	// 		}
-	// 	},	
-	// 	{
-	// 		$match : {
-	// 			date : { 
-	// 				$gte:  req.body.startDate,
-	// 				$lte: endDate
-	// 			}, 
-	// 			userId : { 
-	// 				$eq : ObjectId(req.body.userId) 
-	// 			}
-	// 		} 
-	// 	}
-	// ])
-	.lean()	
+	// attendanceModel.find(
+	// 	{ date : { $gte: req.body.startDate  , $lte :  endDate } , userId : { $eq : req.body.userId } }
+	// 	)
+	attendanceModel.aggregate(
+			[
+			{
+				$lookup:
+				{
+					from: "users",
+					localField: "userId",
+					foreignField: "_id",
+					as: "user"
+				}
+			},
+			{
+				$match : {
+					date : { 
+						$gte:  new Date(req.body.startDate),
+						$lte: new Date(endDate)
+					},
+					userId : {
+						$eq: ObjectId(req.body.userId)
+					}
+				} 
+			}
+			]
+			)
 	.sort({_id : 1})
 	.exec(async (err , foundLogs)=>{
 		if(err){
 			console.log("getting error in line 302",err);
 			res.send(err);
 		}else if(foundLogs.length){
-			var got = await  attendanceFunction.calculateTimeLog(foundLogs , resultHours , req.body.startDate , endDate);
-			var foundLogs = await attendanceFunction.properFormatDate(foundLogs);	
+			var got = await  attendanceFunction.calculateTimeLog(foundLogs  , req.body.startDate , endDate);
+			// var foundLogs = await attendanceFunction.properFormatDate(foundLogs);
+			foundLogs = await attendanceFunction.formatMonthAccordingToDaysSingleEmployee(foundLogs, req.body.startDate, endDate);
 			got['foundLogs'] = foundLogs;
-
+			got['TotalHoursToComplete'] = totalHoursToWork
 			res.send(got);
 		}else{
 			console.log("getting nothing")
@@ -515,6 +521,7 @@ take_attendance.getReportByFlag = function(req , res){
 					var StartingDate = moment(req.body.startDate);
 					var momentObjEnd = moment(req.body.endDate);
 					var resultHours = momentObjEnd.diff(StartingDate, 'days') + 1;
+					console.log("@524 ========================>", req.body.startDate , req.body.endDate)
 					var got = await  attendanceFunction.calculateTimeLog(foundLogs , resultHours , req.body.startDate , req.body.endDate);
 					var foundLogs = await attendanceFunction.formatMonthAccordingToDaysSingleEmployee(foundLogs , req.body.startDate , req.body.endDate);
 					got['foundLogs'] = foundLogs;
