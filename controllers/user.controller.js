@@ -87,10 +87,25 @@ userController.getUserById = function(req,res){
 }
 
 userController.updateUserById = function(req,res){
+	console.log("EHEY")
 	console.log("req body of update user by Id" , req.body);
-
-	userModel.findOneAndUpdate({_id: req.body.id} , {$set: req.body} , {upsert: true, new: true} , (updatedUser , err)=>{
+	// userModel.findAndModify({
+	// 	query: { _id: req.params.id},
+	// 	update: req.body
+	// }, function())
+	// .exec((updatedUser , err)=>{
+	// 	if(err){
+	// 		console.log("Error in updated user ============>", err)
+	// 		res.status(400).send(err);
+	// 	}
+	// 	else{
+	// 		console.log("UPDATED USER ===========>", updatedUser)
+	// 		res.status(200).send(updatedUser);
+	// 	}
+	// });
+	userModel.findOneAndUpdate({_id: req.params.id} , req.body , {upsert: true, new: true} , (err , updatedUser)=>{
 		if(err){
+			console.log("Error in updated user ============>", err)
 			res.status(400).send(err);
 		}
 		else{
@@ -102,7 +117,7 @@ userController.updateUserById = function(req,res){
 userController.deleteUserById = function(req,res){
 	console.log("Req. body of delete ===========>" , req.body);
 	
-	userModel.findOneAndRemove({_id : req.body.id} , (removedUser,err)=>{
+	userModel.findOneAndRemove({_id : req.params.id} , (err, removedUser)=>{
 		if(err){
 			res.status(404).send(err);
 		}
