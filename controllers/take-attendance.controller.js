@@ -313,7 +313,7 @@ take_attendance.getTodaysattendance = function(req , res){
 		if(err){
 			res.send(err);
 		}else{
-			userModel.find({userRole : { $ne : 'admin' } , branch : { $eq : req.body.branch }})
+			userModel.find({userRole : { $ne : 'admin' } , branch : { $eq : req.body.branch }, isActive: {$ne: false} })
 			.exec(async (err , totalUser)=>{
 				if(err){
 					res.status(500).send(err);
@@ -372,7 +372,8 @@ take_attendance.getReportById = async function(req , res){
 					},
 					userId : {
 						$eq: ObjectId(req.body.userId)
-					}
+					},
+					
 				} 
 			}
 			]

@@ -8,7 +8,8 @@ var UserSchema = new Schema({
 	password: {type: String},
 	designation: {type: String},
 	userRole : {type : String , default: 'employee'},
-	branch : {type : String , default: null}
+	branch : {type : String , default: null},
+	isActive: {type:Boolean , default: true}
 });
  
 

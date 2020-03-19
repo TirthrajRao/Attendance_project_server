@@ -31,7 +31,7 @@ userController.signUp = function(req,res){
 }
 userController.login = function(req,res){
 	console.log("Req. body of login ===========>" , req.body.email , "=======++> " , req.body.password , req.body);
-	userModel.findOne({email: req.body.email , password: req.body.password} ,async (err,foundUser)=>{
+	userModel.findOne({email: req.body.email , password: req.body.password , isActive: true} ,async (err,foundUser)=>{
 		if(err){
 			console.log("err ");
 			res.status(404).send(err);
@@ -54,7 +54,7 @@ userController.login = function(req,res){
 userController.getUsers = function(req,res){
 	console.log("Req. body of getUSes ===========>" , req.body);
 
-	userModel.find({ designation: {$ne: 'Admin'}  , branch : {$eq : req.body.branch}} , 'name designation _id email' )
+	userModel.find({ designation: {$ne: 'Admin'}  , branch : {$eq : req.body.branch}, isActive : {$ne: false}} , 'name designation _id email' )
 	.sort({name : 1})
 	.exec((err,users)=>{
 		if(err){
@@ -117,7 +117,7 @@ userController.updateUserById = function(req,res){
 userController.deleteUserById = function(req,res){
 	console.log("Req. body of delete ===========>" , req.body);
 	
-	userModel.findOneAndRemove({_id : req.params.id} , (err, removedUser)=>{
+	userModel.findOneAndUpdate({_id : req.params.id} , {isActive: false} , {upsert: true, new:true} ,(err, removedUser)=>{
 		if(err){
 			res.status(404).send(err);
 		}

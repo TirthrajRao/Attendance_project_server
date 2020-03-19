@@ -131,6 +131,20 @@ app.get("/add-user" ,function(req , res){
 	});
 });
 
+// userModel.find()
+// 		.exec((err , foundUsers)=>{
+// 			if(err){
+// 				console.log(err)
+// 			}
+// 			else{
+// 				foundUsers.forEach(async function(user , index){
+// 					user['isActive'] = true;
+// 					await userModel.findOneAndUpdate({_id : user._id} , user , {upsert : true , new : true});
+// 				});
+				
+// 			}
+// 		});
+
 app.listen(4000);
 
 

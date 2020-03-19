@@ -128,6 +128,7 @@ const attendanceFunctions = {
 				momentDate = moment(startDate).add(i , 'Days');
 				console.log("start fate ==>" , moment(momentDate).utc().format("DD-MM-YYYY"), moment(momentDate).utc().format('dd'));
 				dateToMatch = moment(momentDate).utc().format("DD-MM-YYYY");
+				console.log(" date compariosn ============>", momentDate > moment().format())
 				if(!keys.includes(dateToMatch)){
 					keys.push(dateToMatch);
 					if(moment(momentDate).utc().format('dd') != 'Su'){
@@ -224,7 +225,15 @@ const attendanceFunctions = {
 					// console.log(" ======>",new Date(dateToMatch));
 					dateToMatch = new Date(dateToMatch);
 					// console.log("days ==>" ,moment(dateToMatch).format('dd') , dateToMatch);
-					if(moment(dateToMatch).format('dd') == 'Su'){
+					if(dateToMatch > new Date()){
+						dateToMatch = moment(dateToMatch).format('DD-MM-YYYY');
+						var obj = {};
+						obj['date'] = dateToMatch;
+						obj['message'] = "YET TO GO";
+						keys.push(dateToMatch);
+						tmp.push(obj);
+					}
+					else if(moment(dateToMatch).format('dd') == 'Su'){
 						// console.log("in if ==>" , moment(dateToMatch).format('DD-MM-YYYY'))
 						dateToMatch = moment(dateToMatch).format('DD-MM-YYYY');
 						var obj = {};
