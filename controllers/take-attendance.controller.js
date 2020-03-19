@@ -523,6 +523,9 @@ take_attendance.getReportByFlag = function(req , res){
 					var resultHours = momentObjEnd.diff(StartingDate, 'days') + 1;
 					console.log("@524 ========================>", req.body.startDate , req.body.endDate)
 					var got = await  attendanceFunction.calculateTimeLog(foundLogs , resultHours , req.body.startDate , req.body.endDate);
+					if(moment().format('MMMM') == moment(req.body.startDate).format('MMMM')){
+						req.body.startDate = moment().format();	
+					}
 					var foundLogs = await attendanceFunction.formatMonthAccordingToDaysSingleEmployee(foundLogs , req.body.startDate , req.body.endDate);
 					got['foundLogs'] = foundLogs;
 

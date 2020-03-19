@@ -206,24 +206,26 @@ const attendanceFunctions = {
 		// console.log("same month", moment().format('MMMM') , moment(startDate).format('MMMM'));
 
 		if(moment().format('MMMM') == moment(startDate).format('MMMM')){
-			totalDays = moment().format('DD');
+			// totalDays = moment().format('DD');
+			var totalDays = moment(endDate).diff(startDate, 'days');
+			console.log("total days in if condition =======>",moment(endDate),moment(startDate) ,totalDays);
 			console.log("keys ==> " , keys);
 			console.log(moment(startDate).format('DD') - 1);
 			var tmp = data;
 			for(var i = 0 ; i < totalDays ; i++){
 				momentDate = moment(startDate).add(i , 'Days');
-				console.log("start fate ==>" , moment(momentDate).utc().format("DD-MM-YYYY"));
+				// console.log("start fate ==>" , moment(momentDate).utc().format("DD-MM-YYYY"));
 				dateToMatch = moment(momentDate).utc().format("DD-MM-YYYY");
 				if(!keys.includes(dateToMatch)){
 					dd = dateToMatch.split('-')[0];
 					mm = dateToMatch.split('-')[1];
 					yy = dateToMatch.split('-')[2];
 					dateToMatch = mm + "-" + dd + "-" + yy;	
-					console.log(" ======>",new Date(dateToMatch));
+					// console.log(" ======>",new Date(dateToMatch));
 					dateToMatch = new Date(dateToMatch);
-					console.log("days ==>" ,moment(dateToMatch).format('dd') , dateToMatch);
+					// console.log("days ==>" ,moment(dateToMatch).format('dd') , dateToMatch);
 					if(moment(dateToMatch).format('dd') == 'Su'){
-						console.log("in if ==>" , moment(dateToMatch).format('DD-MM-YYYY'))
+						// console.log("in if ==>" , moment(dateToMatch).format('DD-MM-YYYY'))
 						dateToMatch = moment(dateToMatch).format('DD-MM-YYYY');
 						var obj = {};
 						obj['date'] = dateToMatch;
@@ -241,8 +243,11 @@ const attendanceFunctions = {
 				}
 			}
 		}else{
-			var totalDaysInMonth = moment(startDate).daysInMonth();
-			console.log("total days in month" , totalDaysInMonth);
+
+			var totalDaysInMonth = moment(endDate).diff(moment(startDate), 'days') + 1;
+			console.log("total days in if condition =======>", totalDaysInMonth);
+			// var totalDaysInMonth = moment(startDate).daysInMonth();
+			// console.log("total days in month" , totalDaysInMonth);
 			var tmp = data;
 			for(var i = 0 ; i < totalDaysInMonth ; i++){
 				momentDate = moment(startDate).add(i , 'Days');
@@ -305,7 +310,7 @@ const attendanceFunctions = {
 		});
 		newObject.sort((a,b)=>new Date(a.date)-new Date(b.date));
 		newObject.forEach((obj , index)=>{
-			console.log("obj ==>" , obj.date);
+			// console.log("obj ==>" , obj.date);
 		});
 		return newObject;
 	},
