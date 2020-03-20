@@ -22,13 +22,13 @@ app.use(express.urlencoded({ extended: false }));
 
 
 //https server
-// const port = 4000;
-// var privateKey = fs.readFileSync('/var/www/html/attendence/ssl/privkey1.pem');
-// var certificate = fs.readFileSync('/var/www/html/attendence/ssl/fullchain1.pem');
-// var credentials = {key: privateKey, cert: certificate};
-// const secureServer = https.createServer(credentials,app);
-// secureServer.listen(port);
-// console.log("secure server started on 4000");
+const port = 4000;
+var privateKey = fs.readFileSync('/var/www/html/attendence/ssl/privkey1.pem');
+var certificate = fs.readFileSync('/var/www/html/attendence/ssl/fullchain1.pem');
+var credentials = {key: privateKey, cert: certificate};
+const secureServer = https.createServer(credentials,app);
+secureServer.listen(port);
+console.log("secure server started on 4000");
 //18.130.243.169
 mongoose.connect('mongodb://localhost/muster_logs', {useNewUrlParser: true , useUnifiedTopology: true}  )
 .then(() => console.log("Congratulations you are connected to Database"))
@@ -145,7 +145,7 @@ app.get("/add-user" ,function(req , res){
 // 			}
 // 		});
 
-app.listen(4000);
+// app.listen(4000);
 
 
 
