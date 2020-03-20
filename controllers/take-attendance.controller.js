@@ -318,7 +318,7 @@ take_attendance.getTodaysattendance = function(req , res){
 				if(err){
 					res.status(500).send(err);
 				}else{
-					foundLogs = await attendanceFunction.properFormatDate(foundLogs);
+					// foundLogs = await attendanceFunction.properFormatDate(foundLogs);
 					console.log("You are in getAttendanceById function" , foundLogs);
 					res.json({data :foundLogs , presentCount : foundLogs.length , totalUser : totalUser.length});
 				}
@@ -332,22 +332,13 @@ take_attendance.getReportById = async function(req , res){
 		req.body.startDate = req.body.startDate.split("T")[0] + "T18:30:00.000Z";
 		endDate = req.body.endDate.split("T")[0] + "T18:30:00.000Z";
 		var totalHoursToWork = await attendanceFunction.calculateResultHours(req.body.startDate, endDate);
-		// endDate = endDate + "T"  + part;
-
-		// var StartingDate = moment(req.body.startDate);
-		// var momentObjEnd = moment(endDate);
-		// console.log("Both dates =============>" ,req.body.startDate , endDate ) + 1;
-
-		// var resultHours = momentObjEnd.diff(StartingDate, 'days') + 1;
+	
 	}else{
 		endDate = req.body.endDate +  "T18:30:00.000Z"; 
 		req.body.startDate = req.body.startDate +  "T18:30:00.000Z";
 		var totalHoursToWork = await attendanceFunction.calculateResultHours(req.body.startDate, endDate);
-		// var StartingDate = moment(req.body.startDate);
-		// var momentObjEnd = moment(endDate);
-		// var resultHours = momentObjEnd.diff(StartingDate, 'days') + 1;
 	}
-	// let resultHours = await attendanceFunction.calculateResultHours(req.body);
+	
 	
 	console.log("In the success" ,  req.body.startDate , endDate);
 	// attendanceModel.find(
@@ -397,7 +388,7 @@ take_attendance.getReportById = async function(req , res){
 	});
 }
 
-take_attendance.getReportByFlag = function(req , res){
+take_attendance.getReportByFlag = async function(req , res){
 	req.body.endDate = req.body.endDate.split('T')[0] +   "T18:30:00.000Z"; 
 	console.log("body of get report by flag =====>" , req.body);
 	if(req.body.id == 'All'){
@@ -489,6 +480,7 @@ take_attendance.getReportByFlag = function(req , res){
 			}
 		});
 	}else{
+		var totalHoursToWork = await attendanceFunction.calculateResultHours(req.body.startDate, req.body.endDate);
 		console.log("Inside ekse");
 		attendanceModel.aggregate(
 			[
@@ -519,17 +511,11 @@ take_attendance.getReportByFlag = function(req , res){
 				return(res.status(500).send(err));
 			}else{
 				if(foundLogs.length){
-					var StartingDate = moment(req.body.startDate);
-					var momentObjEnd = moment(req.body.endDate);
-					var resultHours = momentObjEnd.diff(StartingDate, 'days') + 1;
-					console.log("@524 ========================>", req.body.startDate , req.body.endDate)
-					var got = await  attendanceFunction.calculateTimeLog(foundLogs , resultHours , req.body.startDate , req.body.endDate);
-					if(moment().format('MMMM') == moment(req.body.startDate).format('MMMM')){
-						req.body.startDate = moment().format();	
-					}
-					var foundLogs = await attendanceFunction.formatMonthAccordingToDaysSingleEmployee(foundLogs , req.body.startDate , req.body.endDate);
+					var got = await  attendanceFunction.calculateTimeLog(foundLogs  , req.body.startDate , req.body.endDate);
+					// var foundLogs = await attendanceFunction.properFormatDate(foundLogs);
+					foundLogs = await attendanceFunction.formatMonthAccordingToDaysSingleEmployee(foundLogs, req.body.startDate, req.body.endDate);
 					got['foundLogs'] = foundLogs;
-
+					got['TotalHoursToComplete'] = totalHoursToWork
 					res.send(got);
 				}else{
 					return(res.status(200).send(foundLogs));
