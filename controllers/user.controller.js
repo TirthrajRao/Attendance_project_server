@@ -117,7 +117,7 @@ userController.updateUserById = function(req,res){
 userController.deleteUserById = function(req,res){
 	console.log("Req. body of delete ===========>" , req.body);
 	
-	userModel.findOneAndUpdate({_id : req.params.id} , {upsert: true, new:true} ,(err, removedUser)=>{
+	userModel.findOneAndUpdate({_id : req.params.id} , {$set : { isActive: false }}  ,{upsert: true, new:true} ,(err, removedUser)=>{
 		if(err){
 			res.status(404).send(err);
 		}
