@@ -38,11 +38,12 @@ take_attendance.fillAttendance = function(req , res){
 				attendanceModel.findOne({userId: req.body.userId , date: newDate})
 				.populate('userId')
 				.exec( async (err , foundAttendence)=>{
+					console.log("Found attendacne baro baar ====================================+> ", foundAttendence)
 					if(err){
 						res.status(500).send(err);
 					}
 					else if(foundAttendence != null){
-						console.log(" foundAttendence ======>" , foundAttendence)
+						// console.log("foundAttendence != null  ======>" , foundAttendence)
 						var timeLogLength = foundAttendence.timeLog.length - 1;
 						var lastRecord = foundAttendence.timeLog[timeLogLength].out;
 						if(lastRecord !="-"){
@@ -66,7 +67,17 @@ take_attendance.fillAttendance = function(req , res){
 						});
 					}
 					else{
-						foundAttendence.timeLog[timeLogLength].out = /*moment().tz("Asia/Calcutta|Asia/Kolkata").format('h:mm:ss a')*/moment().utcOffset("+05:30").format('h:mm:ss a');
+						console.log("Found attandance =====> ", foundAttendence)
+						// let de = new Date(req.body.lastLog)
+						// console.log(new Date(req.body.lastLog))
+						// console.log("new momwn tdate last log ===========>", moment(de).utcOffset("+05:30").format('h:mm:ss a'))
+						// res.json({text: "New log", Body: req.body});
+						if(req.body.lastLog){
+							foundAttendence.timeLog[timeLogLength].out = req.body.lastLog;
+						}
+						else{
+							foundAttendence.timeLog[timeLogLength].out = moment().utcOffset("+05:30").format('h:mm:ss a');
+						}
 						foundAttendence = await attendanceFunction.calculateDifference(foundAttendence , timeLogLength);
 						attendanceModel.findOneAndUpdate({date: foundAttendence.date , userId: foundAttendence.userId._id} , {$set: foundAttendence} , {upsert: true , new: true} , (err , updatedLog)=>{
 							if(err){
