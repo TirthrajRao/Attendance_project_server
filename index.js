@@ -37,11 +37,17 @@ mongoose.connect('mongodb://localhost/muster_logs', {useNewUrlParser: true , use
 app.use('/attendance' , takeAttendanceRoutes);
 app.use('/user' , userRoutes);
 
+<<<<<<< HEAD
+app.get('/constant-call', (req,res)=>{
+	res.send("called")
+})
+=======
 app.get("/constant-call", function(req, res){
 	res.send("Response from server");
 	// res.send(Date.now());
     console.log("Called api");
 });
+>>>>>>> 8579adf0dac01a501ec040c5e581131dc1c3c5d2
 
 //script to change existing value of database to new value
 app.get("/change" ,function(req , res){
