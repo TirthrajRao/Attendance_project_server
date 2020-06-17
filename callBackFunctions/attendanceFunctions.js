@@ -1,6 +1,8 @@
 const moment = require('moment');
 var nodemailer = require('nodemailer');
 const userModel = require('../models/user.model');
+var attendanceModel = require('../models/attendance.model');
+
 
 const attendanceFunctions = {
 	newAttendance : function(body){
@@ -360,8 +362,40 @@ const attendanceFunctions = {
 				}
 			})
 		});
+	}, 
+	logNewAttendanceOfSameDay : (foundAttendence) => {
+		return new Promise((resolve, reject) => {
+			var arr = {
+				in :  moment().utcOffset("+05:30").format('h:mm:ss a')
+			};
+			foundAttendence.status = "Present";
+			foundAttendence.timeLog.push(arr);
+			foundAttendence.absentCount = Number(foundAttendence.absentCount) + 1; 
+			attendanceModel.findOneAndUpdate({_id: foundAttendence._id} , {$set: foundAttendence} , {upsert: true, new: true} , (err , updatedAttendence)=>{
+				if(err){
+					reject(err);
+				}else{
+					resolve(updatedAttendence)
+				}
+			});
+		});
+	}, 
+	logOutTimeOfSameDay : (foundAttendence) => {
+		return new Promise((resolve, reject) => {
+			attendanceModel.findOneAndUpdate({date: foundAttendence.date , userId: foundAttendence.userId._id} , {$set: foundAttendence} , {upsert: true , new: true} , (err , updatedLog)=>{
+				if(err){
+					reject(err);
+				}
+				else{
+					resolve(updatedLog)
+				}
+			});
+		});
 	}
 }
+
+
+
 
 
 
