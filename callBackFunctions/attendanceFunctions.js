@@ -2,17 +2,20 @@ const moment = require('moment');
 var nodemailer = require('nodemailer');
 const userModel = require('../models/user.model');
 var attendanceModel = require('../models/attendance.model');
+var momentTimeZone = require('moment-timezone');
 
 
 const attendanceFunctions = {
 	newAttendance : function(body){
 		console.log("body in new attendence ===============+>" , body);
+		var indiaTime = momentTimeZone().tz("Asia/Kolkata").format();
+
 		body = {
 			day : moment(new Date(), "YYYY-MM-DD HH:mm:ss").format('dddd'),
 			time:  moment().utcOffset("+05:30").format('h:mm:ss a'),
 			status: "Present",
 			userId : body.userId,
-			date : new Date().toISOString().split("T")[0] + "T18:30:00.000Z",
+			date : indiaTime.split("T")[0] + "T18:30:00.000Z",
 			timeLog : {
 				in : moment().utcOffset("+05:30").format('h:mm:ss a')
 			}

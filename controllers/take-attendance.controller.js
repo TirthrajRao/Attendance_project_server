@@ -153,9 +153,11 @@ take_attendance.getAttendanceById =  function(req , res){
 		console.log("to" , new Date().toISOString().split("T")[0] + "T18:30:00.000Z");
 		console.log("from" , someDate.toISOString().split("T")[0] + "T18:30:00.000Z");
 		var from = someDate.toISOString().split("T")[0] + "T18:30:00.000Z";
-		var to =  new Date().toISOString().split("T")[0] + "T18:30:00.000Z"
-		// console.log("From" , moment(new Date()).subtract(5,'d').format("DD/MM/YYYY"));
-		// console.log("To" , moment(new Date()).format("DD/MM/YYYY"));
+
+		var indiaTime = momentTimeZone().tz("Asia/Kolkata").format()
+		var to =  indiaTime.split("T")[0] + "T18:30:00.000Z"
+		console.log("From" , from);
+		console.log("To" , to);
 		attendanceModel.find(
 			{ date : { $gte: from  , $lte :  to } , userId : { $eq : req.body.userId } }
 			)
@@ -180,7 +182,8 @@ take_attendance.getAttendanceById =  function(req , res){
 			}
 		});
 	}else{
-		var newDate = new Date().toISOString().split("T")[0] + "T18:30:00.000Z";
+		var indiaTime = momentTimeZone().tz("Asia/Kolkata").format()
+		var newDate = indiaTime.split("T")[0] + "T18:30:00.000Z";
 		console.log("You are in getAttendanceById function" , req.body.userId);
 		attendanceModel.find( { date :  newDate   , userId: req.body.userId} 
 			)
