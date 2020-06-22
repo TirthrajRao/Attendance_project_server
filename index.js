@@ -8,10 +8,18 @@ const path = require("path");
 const https = require('https');
 const fs = require('fs');
 var BSONStream = require('bson-stream');
+const cron = require('node-cron');
+const crontab = require('node-crontab');
+var momentTimeZone = require('moment-timezone');
+
 
 const attendanceModel = require('./models/attendance.model');
 const userModel = require('./models/user.model');
+
+
 //import controllers
+var attendanceFunction = require('./callBackFunctions/attendanceFunctions');
+
 const takeAttendanceRoutes = require('./routes/take-attendance.js')
 const userRoutes = require('./routes/user');
 const app = express();
@@ -41,6 +49,67 @@ app.use('/user' , userRoutes);
 app.get('/constant-call', (req,res)=>{
 	res.send("called")
 })
+
+
+/*Cron job*/
+crontab.scheduleJob("0 0 * * *" , function(){
+	console.log("hello");
+	// console.log("req . body ===>" , req.body.branch);
+	var indiaTime = momentTimeZone().tz("Asia/Kolkata").format()
+	var newDate = indiaTime.split("T")[0] + "T18:30:00.000Z";
+	console.log("new Date" , newDate,typeof newDate ,new Date(newDate));
+	attendanceModel.aggregate([
+		{ $match: { date: new Date(newDate) } },
+		{
+			$lookup:
+			{
+				from: "users",
+				localField: "userId",
+				foreignField: "_id",
+				as: "user"
+			}
+		}
+		])
+	.exec((err , foundLogs)=>{
+		if(err){
+			res.send(err);
+		}else{
+			userModel.find({userRole : { $ne : 'admin' } , isActive: {$ne: false} })
+			.exec(async (err , totalUser)=>{
+				if(err){
+					res.status(500).send(err);
+				}else{
+					// foundLogs = await attendanceFunction.properFormatDate(foundLogs);
+					console.log("You are in getAttendanceById function" , foundLogs);
+					foundLogs.forEach(async (singleRecord)=>{
+						lastRecord = singleRecord.timeLog[singleRecord.timeLog.length -1]
+						if(lastRecord.out == '-'){
+							singleRecord.timeLog[singleRecord.timeLog.length -1].out = moment().utcOffset("+05:30").format('h:mm:ss a');	
+							foundAttendence = await attendanceFunction.calculateDifference(singleRecord , singleRecord.timeLog.length -1);
+							await attendanceFunction.logOutTimeOfSameDay(singleRecord);
+							// .then(fullFilled => {
+							// 	var arr = [];
+							// 	arr.push(fullFilled)
+							// 	return res.status(200).send(arr);
+							// })
+							// .catch(rejected => {
+							// 	console.log(rejected)
+							// 	return res.status(500).send(rejected);
+							// })
+						}
+					})
+					// res.json({data :foundLogs , presentCount : foundLogs.length , totalUser : totalUser.length});
+				}
+			});
+		}
+	});
+},{
+	schedule: true,
+	timezone: "Asia/kolkata"
+});
+
+
+
 
 
 //script to change existing value of database to new value

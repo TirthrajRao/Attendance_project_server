@@ -309,7 +309,8 @@ take_attendance.getLogBySingleDate = function(req , res){
 //done below controller
 take_attendance.getTodaysattendance = function(req , res){
 	console.log("req . body ===>" , req.body.branch);
-	var newDate = new Date().toISOString().split("T")[0] + "T18:30:00.000Z";
+	var indiaTime = momentTimeZone().tz("Asia/Kolkata").format()
+	var newDate = indiaTime.split("T")[0] + "T18:30:00.000Z";
 	console.log("new Date" , newDate,typeof newDate ,new Date(newDate));
 	attendanceModel.aggregate([
 		{ $match: { date: new Date(newDate) } },
