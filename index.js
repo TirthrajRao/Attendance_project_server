@@ -52,11 +52,12 @@ app.get('/constant-call', (req,res)=>{
 
 
 /*Cron job*/
-crontab.scheduleJob("0 0 * * *" , function(){
+crontab.scheduleJob("0 0 * * 1-6" , function(){
 	console.log("hello");
 	// console.log("req . body ===>" , req.body.branch);
 	var indiaTime = momentTimeZone().tz("Asia/Kolkata").format()
 	var newDate = indiaTime.split("T")[0] + "T18:30:00.000Z";
+	newDate=  moment(newDate).subtract(1, 'days')
 	console.log("new Date" , newDate,typeof newDate ,new Date(newDate));
 	attendanceModel.aggregate([
 		{ $match: { date: new Date(newDate) } },
