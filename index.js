@@ -52,7 +52,7 @@ app.get('/constant-call', (req,res)=>{
 
 
 /*Cron job*/
-crontab.scheduleJob("30 18 * * 1-6" , function(){
+crontab.scheduleJob("29 18 * * 1-6" , function(){
 	console.log("hello");
 	// console.log("req . body ===>" , req.body.branch);
 	var indiaTime = momentTimeZone().tz("Asia/Kolkata").format()
