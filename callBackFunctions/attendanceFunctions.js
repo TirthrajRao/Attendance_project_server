@@ -11,7 +11,7 @@ const attendanceFunctions = {
 		var indiaTime = momentTimeZone().tz("Asia/Kolkata").format();
 
 		body = {
-			day : moment(new Date(), "YYYY-MM-DD HH:mm:ss").format('dddd'),
+			day : moment(indiaTime, "YYYY-MM-DD HH:mm:ss").format('dddd'),
 			time:  moment().utcOffset("+05:30").format('h:mm:ss a'),
 			status: "Present",
 			userId : body.userId,

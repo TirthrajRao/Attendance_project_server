@@ -80,11 +80,11 @@ take_attendance.fillAttendance = function(req , res){
 							.then(fullFilled => {
 								var arr = [];
 								arr.push(fullFilled)
-								res.status(200).send(arr);
+								return  res.status(200).send(arr);
 							})
 							.catch(rejected => {
 								console.log(rejected)
-								res.status(500).send(rejected);
+								return res.status(500).send(rejected);
 							});
 						}
 						else if(!req.body.api_of){
